@@ -57,7 +57,8 @@
   border-radius: 10px;
   overflow: hidden;
 }
-.category-thead {
+/* thead */
+.categories thead {
   background: #000;
   color: #fff;
 }
@@ -69,28 +70,23 @@
 }
 /* tbody */
 .categories tbody {
-  background: #6c6b68;
+  background: #979692;
 }
-
 .categories tbody tr {
   border-bottom: 1px solid #b1afac;
 }
-
 .categories tbody tr:hover {
   background: #b1afac;
 }
-
 .categories tbody tr:last-child {
   border-bottom: none;
 }
-
 .categories tbody tr td {
   padding: 15px;
   text-align: center;
   color: #fff;
   font-weight: 600;
 }
-
 /* actions qismi */
 .actions-td button {
   color: #fff;
