@@ -1,85 +1,27 @@
 import { FaSearch } from "react-icons/fa";
-import "./Categories.css";
 import { useEffect, useState } from "react";
-import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchCategories } from "./CategorySlice/CategorySlice";
+import "./Categories.css";
 const Categories = () => {
-  const [categoryData, setCategoryData] = useState([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const dispatch = useDispatch();
+  const { categoryData, loading, error } = useSelector(
+    (state) => state.categories
+  );
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    dispatch(fetchCategories);
+  }, [dispatch]);
 
-  // get uchun
-  const fetchData = async () => {
-    try {
-      const response = await fetch(
-        "https://api.dezinfeksiyatashkent.uz/api/categories",
-        {
-          method: "GET",
-        }
-      );
-      if(response.ok){
-        const data = await response.json();
-      setCategoryData(data.data);
-      }else{
-        console.log("error");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  // post uchun
-  const addCategory = async () => {
-    const formData = new FormData();
-    formData.append("name", name);
-    formData.append("description", description);
-
-    try {
-      const response = await fetch(
-        "https://api.dezinfeksiyatashkent.uz/api/categories",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: formData,
-        }
-      );
-      if (response.ok) {
-        setName("");
-        setDescription("");
-        fetchData();
-        toast.success("Category added successfully");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  // delete uchun
-  const deleteCategory = async (id) => {
-    try {
-      const response = await fetch(
-        `https://api.dezinfeksiyatashkent.uz/api/categories/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (response.ok) {
-        toast.success("Category deleted successfully");
-        fetchData();
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <div className="categories-container">
