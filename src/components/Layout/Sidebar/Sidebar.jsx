@@ -11,6 +11,7 @@ import {
 import { Link } from "react-router-dom";
 import { setActiveMenu } from "../menuSlice/menuSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { MdLogin } from "react-icons/md";
 
 const Sidebar = () => {
 const activeMenu = useSelector((state) => state.activeMenu)
@@ -127,6 +128,16 @@ useEffect(() => {
             >
               <FaLink className="mr-3 text-lg" />
               <span className="text-sm">Sources</span>
+            </Link>
+          </li>
+          {/* logout */}
+          <li className="mb-1 group">
+            <Link
+              to="/login"
+              className={`flex font-semibold items-center py-2 px-4 text-gray-900 hover:bg-gray-950 hover:text-gray-100 rounded-md`}
+            >
+              <MdLogin className="mr-3 text-lg" />
+              <span className="text-sm">Logout</span>
             </Link>
           </li>
         </ul>
