@@ -1,8 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
 import activeMenuReducer from "../components/Layout/menuSlice/menuSlice";
+import authSlice from "../components/Login/loginSlice";
 
 export const store = configureStore({
   reducer: {
-    activeMenu: activeMenuReducer
+    activeMenu: activeMenuReducer,
+    auth: authSlice,
   }
 });
