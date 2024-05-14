@@ -1,10 +1,12 @@
 import { FaSearch } from "react-icons/fa";
 import "./Categories.css";
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 const Categories = () => {
   const [categoryData, setCategoryData] = useState([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [isOpenModal, setIsOpenModal] = useState(false);
 
   useEffect(() => {
     fetchData();
@@ -19,9 +21,12 @@ const Categories = () => {
           method: "GET",
         }
       );
-      const data = await response.json();
-      console.log(data.data);
+      if(response.ok){
+        const data = await response.json();
       setCategoryData(data.data);
+      }else{
+        console.log("error");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -34,14 +39,22 @@ const Categories = () => {
     formData.append("description", description);
 
     try {
-      await fetch("https://api.dezinfeksiyatashkent.uz/api/categories", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: formData,
-      });
-      fetchData();
+      const response = await fetch(
+        "https://api.dezinfeksiyatashkent.uz/api/categories",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: formData,
+        }
+      );
+      if (response.ok) {
+        setName("");
+        setDescription("");
+        fetchData();
+        toast.success("Category added successfully");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -59,8 +72,10 @@ const Categories = () => {
           },
         }
       );
-      const data = await response.json();
-      fetchData();
+      if (response.ok) {
+        toast.success("Category deleted successfully");
+        fetchData();
+      }
     } catch (error) {
       console.log(error);
     }

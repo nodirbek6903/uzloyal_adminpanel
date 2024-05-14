@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from "react";
 import {
   FaListAlt,
   FaQuestionCircle,
@@ -14,15 +13,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { MdLogin } from "react-icons/md";
 
 const Sidebar = () => {
-const activeMenu = useSelector((state) => state.activeMenu)
-const dispatch = useDispatch()
-
-useEffect(() => {
-    localStorage.setItem("activeMenu", activeMenu);
-  }, [activeMenu]);
+  const activeMenu = useSelector((state) => state.activeMenu);
+  const dispatch = useDispatch();
 
   const handleMenuClick = (menu) => {
-    dispatch(setActiveMenu(menu))
+    dispatch(setActiveMenu(menu));
   };
 
   return (

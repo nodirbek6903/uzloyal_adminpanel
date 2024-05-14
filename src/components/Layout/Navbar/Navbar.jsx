@@ -1,10 +1,29 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { IoMdSettings } from "react-icons/io";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setActiveMenu } from "../menuSlice/menuSlice";
 
 const Navbar = () => {
-  const activeMenu = useSelector((state) => state.activeMenu)
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const activeMenu = useSelector((state) => state.activeMenu);
+
+  const menuMap = {
+    "/": "dashboard",
+    "/categories": "categories",
+    "/faqs": "faqs",
+    "/news": "news",
+    "/blogs": "blogs",
+    "/services": "services",
+    "/sources": "sources",
+  };
+
+  useEffect(() => {
+    const currentPath = location.pathname;
+    const activeMenuItem = menuMap[currentPath] || "dashboard";
+    dispatch(setActiveMenu(activeMenuItem));
+  }, [location, dispatch]);
 
   return (
     <div className="py-2 px-6 w-[85%] h-[80px]  bg-[#f8f4f3]  flex items-center shadow-md shadow-black/5 absolute top-0 right-0 z-30">
