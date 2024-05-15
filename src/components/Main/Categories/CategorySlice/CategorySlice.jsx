@@ -52,6 +52,32 @@ export const addCategory = createAsyncThunk(
   }
 );
 
+export const editCategory = createAsyncThunk(
+  "categories/editCategory",
+  async (updateCategory, { rejectWithValue }) => {
+    try {
+      const token = getAuthToken();
+      const formData = new FormData();
+      formData.append("name", updateCategory.name);
+      formData.append("description", updateCategory.description);
+      const response = await axios.put(
+        `${API_URL}/${updateCategory.id}`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      return response.data.data;
+    } catch (error) {
+      console.error("Edit Category Error:", error.response);
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 export const removeCategory = createAsyncThunk(
   "categories/removeCategory",
   async (id, { rejectWithValue }) => {
@@ -98,6 +124,19 @@ const categoriesSlice = createSlice({
       .addCase(addCategory.rejected, (state, action) => {
         state.error = action.payload;
         toast.error("Failed to add category");
+      })
+      .addCase(editCategory.fulfilled, (state, action) => {
+        const index = state.categoryData.findIndex(
+          (category) => category.id === action.payload.id
+        );
+        if (index !== -1) {
+          state.categoryData[index] = action.payload;
+        }
+        toast.success("Edited category successfully");
+      })
+      .addCase(editCategory.rejected, (state, action) => {
+        state.error = action.payload;
+        toast.error("Failed to edit category");
       })
       .addCase(removeCategory.fulfilled, (state, action) => {
         state.categoryData = state.categoryData.filter(

@@ -4,14 +4,20 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   fetchCategories,
   addCategory,
+  editCategory,
   removeCategory,
 } from "./CategorySlice/CategorySlice";
 import "./Categories.css";
+import { Oval } from "react-loader-spinner";
 const Categories = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [editName, setEditName] = useState("");
+  const [editDescription, setEditDescription] = useState("");
   const [search, setSearch] = useState("");
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const [isEdit, setIsEdit] = useState(false);
+  const [editId, setEditId] = useState(null);
   const dispatch = useDispatch();
   const { categoryData, loading, error } = useSelector(
     (state) => state.categories
@@ -21,9 +27,34 @@ const Categories = () => {
     dispatch(fetchCategories());
   }, [dispatch]);
 
+  // bu qismi editni bosganda tanlangan category malumotlarini chiqarish uchun
+  useEffect(() => {
+    if (editId !== null) {
+      const category = categoryData.find((cat) => cat.id === editId);
+      if (category) {
+        setEditName(category.name);
+        setEditDescription(category.description);
+      }
+    }
+  }, [editId, categoryData]);
+
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="loader-container flex justify-center items-center h-[50vh]">
+        <Oval
+          height={80}
+          width={80}
+          color="#3498DB "
+          visible={true}
+          ariaLabel="oval-loading"
+          secondaryColor="#07F8AF"
+          strokeWidth={2}
+          strokeWidthSecondary={2}
+        />
+      </div>
+    );
   }
+
   if (error) {
     return <div>Error: {error}</div>;
   }
@@ -32,10 +63,36 @@ const Categories = () => {
   const handleAddCategory = () => {
     const newCategory = { name, description };
     dispatch(addCategory(newCategory));
-    dispatch(fetchCategories())
     setName("");
     setDescription("");
     setIsOpenModal(false);
+  };
+
+  // edit category
+  const handleEditCategory = () => {
+    const updateCategory = {
+      id: editId,
+      name: editName,
+      description: editDescription,
+    };
+    dispatch(editCategory(updateCategory));
+    setEditName("");
+    setEditDescription("");
+    setIsOpenModal(false);
+    setIsEdit(false);
+    setEditId(null);
+  };
+
+  // open modal
+  const openEditModal = (id) => {
+    if (id) {
+      setEditId(id);
+      setIsOpenModal(true);
+      setIsEdit(true);
+    } else {
+      setIsEdit(false);
+      setIsOpenModal(true);
+    }
   };
 
   // delete category uchun
@@ -78,45 +135,80 @@ const Categories = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredCategory.map((category, index) => (
-              <tr key={index}>
-                <td>{index + 1}</td>
-                <td>{category.name}</td>
-                <td>{category.description}</td>
-                <td className="actions-td">
-                  <button className="edit-btn">Edit</button>
-                  <button
-                    className="delete-btn"
-                    onClick={() => deleteCategory(category.id)}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {filteredCategory.length === 0 ? (
+              <>
+                <tr>
+                  <td colSpan={4}>
+                    <h2 className="uppercase text-red-600">No data found</h2>
+                  </td>
+                </tr>
+              </>
+            ) : (
+              filteredCategory.map((category, index) => (
+                <tr key={index}>
+                  <td>{index + 1}</td>
+                  <td>{category.name}</td>
+                  <td>{category.description}</td>
+                  <td className="actions-td">
+                    <button
+                      className="edit-btn"
+                      onClick={() => openEditModal(category.id)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="delete-btn"
+                      onClick={() => deleteCategory(category.id)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
       {isOpenModal && (
         <div className="modal">
           <div className="modal-content">
-            <span className="close-btn" onClick={() => setIsOpenModal(false)}>
+            <span
+              className="close-btn"
+              onClick={(id) => {
+                if (id) {
+                  setIsEdit(false);
+                  setIsOpenModal(false);
+                } else {
+                  setIsOpenModal(false);
+                }
+              }}
+            >
               X
             </span>
-            <h2>Add Category</h2>
+            <h2>{isEdit ? "Edit Category" : "Add Category"}</h2>
             <input
               type="text"
               placeholder="Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={isEdit ? editName : name}
+              onChange={(e) =>
+                isEdit ? setEditName(e.target.value) : setName(e.target.value)
+              }
             />
             <input
               type="text"
               placeholder="Description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              value={isEdit ? editDescription : description}
+              onChange={(e) =>
+                isEdit
+                  ? setEditDescription(e.target.value)
+                  : setDescription(e.target.value)
+              }
             />
-            <button onClick={handleAddCategory}>Add</button>
+            <button
+              onClick={isEdit ? () => handleEditCategory() : handleAddCategory}
+            >
+              {isEdit ? "Save" : "Add"}
+            </button>
           </div>
         </div>
       )}
