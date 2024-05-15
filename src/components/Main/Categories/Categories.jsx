@@ -18,7 +18,7 @@ const Categories = () => {
   );
 
   useEffect(() => {
-    dispatch(fetchCategories);
+    dispatch(fetchCategories());
   }, [dispatch]);
 
   if (loading) {
@@ -32,6 +32,7 @@ const Categories = () => {
   const handleAddCategory = () => {
     const newCategory = { name, description };
     dispatch(addCategory(newCategory));
+    dispatch(fetchCategories())
     setName("");
     setDescription("");
     setIsOpenModal(false);
