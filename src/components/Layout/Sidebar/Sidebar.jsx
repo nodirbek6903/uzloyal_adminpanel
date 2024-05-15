@@ -12,10 +12,11 @@ import { Link } from "react-router-dom";
 import { setActiveMenu } from "../menuSlice/menuSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { MdLogin } from "react-icons/md";
+import { logout } from "../../Login/loginSlice";
 
 const Sidebar = () => {
-const activeMenu = useSelector((state) => state.activeMenu)
-const dispatch = useDispatch()
+const activeMenu = useSelector((state) => state.activeMenu);
+const dispatch = useDispatch();
 
 useEffect(() => {
     localStorage.setItem("activeMenu", activeMenu);
@@ -24,6 +25,11 @@ useEffect(() => {
   const handleMenuClick = (menu) => {
     dispatch(setActiveMenu(menu))
   };
+
+  const logoutHandler = () => {
+    dispatch(logout());
+    localStorage.removeItem("access_token");
+  }
 
   return (
     <>
@@ -134,6 +140,7 @@ useEffect(() => {
           <li className="mb-1 group">
             <Link
               to="/login"
+              onClick={logoutHandler}
               className={`flex font-semibold items-center py-2 px-4 text-gray-900 hover:bg-gray-950 hover:text-gray-100 rounded-md`}
             >
               <MdLogin className="mr-3 text-lg" />

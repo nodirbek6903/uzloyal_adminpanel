@@ -22,7 +22,7 @@ const Login = () => {
 
       const response = await AuthService.userLogin(formData);
       dispatch(signUserSuccess(response?.data));
-      navigate("/")
+      navigate("/");
       // throw new Error = response?.message;
     } catch (error) {
       // dispatch(signUserFailure());
