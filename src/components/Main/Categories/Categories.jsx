@@ -1,11 +1,16 @@
 import { FaSearch } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchCategories } from "./CategorySlice/CategorySlice";
+import {
+  fetchCategories,
+  addCategory,
+  removeCategory,
+} from "./CategorySlice/CategorySlice";
 import "./Categories.css";
 const Categories = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [search, setSearch] = useState("");
   const [isOpenModal, setIsOpenModal] = useState(false);
   const dispatch = useDispatch();
   const { categoryData, loading, error } = useSelector(
@@ -23,6 +28,25 @@ const Categories = () => {
     return <div>Error: {error}</div>;
   }
 
+  //category qo'shish uchun
+  const handleAddCategory = () => {
+    const newCategory = { name, description };
+    dispatch(addCategory(newCategory));
+    setName("");
+    setDescription("");
+    setIsOpenModal(false);
+  };
+
+  // delete category uchun
+  const deleteCategory = (id) => {
+    dispatch(removeCategory(id));
+  };
+
+  // search category uchun
+  const filteredCategory = categoryData.filter((category) =>
+    category.name.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
     <div className="categories-container">
       <div className="category-search-add">
@@ -30,12 +54,16 @@ const Categories = () => {
           <input
             type="text"
             className="search-input"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             placeholder="Search categories"
           />
           <FaSearch className="search-icon" />
         </div>
         <div className="add-btns">
-          <button className="add-btn">Add+</button>
+          <button className="add-btn" onClick={() => setIsOpenModal(true)}>
+            Add+
+          </button>
         </div>
       </div>
       <div className="category-table">
@@ -49,29 +77,9 @@ const Categories = () => {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>1</td>
-              <td>Category 1</td>
-              <td>Description 1</td>
-              <td className="actions-td">
-                <button className="edit-btn">Edit</button>
-                <button className="delete-btn">Delete</button>
-              </td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>Category 2</td>
-              <td>Description 2</td>
-              <td className="actions-td">
-                <button className="edit-btn">Edit</button>
-                <button className="delete-btn">Delete</button>
-              </td>
-            </tr>
-          </tbody>
-          {/* <tbody>
-            {categoryData.map((category, index) => (
+            {filteredCategory.map((category, index) => (
               <tr key={index}>
-                <td>{idnex + 1}</td>
+                <td>{index + 1}</td>
                 <td>{category.name}</td>
                 <td>{category.description}</td>
                 <td className="actions-td">
@@ -85,9 +93,32 @@ const Categories = () => {
                 </td>
               </tr>
             ))}
-          </tbody> */}
+          </tbody>
         </table>
       </div>
+      {isOpenModal && (
+        <div className="modal">
+          <div className="modal-content">
+            <span className="close-btn" onClick={() => setIsOpenModal(false)}>
+              X
+            </span>
+            <h2>Add Category</h2>
+            <input
+              type="text"
+              placeholder="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder="Description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+            <button onClick={handleAddCategory}>Add</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
