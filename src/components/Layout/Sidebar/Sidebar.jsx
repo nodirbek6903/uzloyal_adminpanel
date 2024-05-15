@@ -14,17 +14,8 @@ import { MdLogin } from "react-icons/md";
 import { logout } from "../../Login/loginSlice";
 
 const Sidebar = () => {
-<<<<<<< HEAD
   const activeMenu = useSelector((state) => state.activeMenu);
   const dispatch = useDispatch();
-=======
-const activeMenu = useSelector((state) => state.activeMenu);
-const dispatch = useDispatch();
-
-useEffect(() => {
-    localStorage.setItem("activeMenu", activeMenu);
-  }, [activeMenu]);
->>>>>>> f92bbd421c7804e0637be588f9d7a4abbf946814
 
   const handleMenuClick = (menu) => {
     dispatch(setActiveMenu(menu));
