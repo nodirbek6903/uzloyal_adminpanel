@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import "./Blogs.css";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchBlogs, addBlogs, removeBlogs } from "./BlogSlice/BlogSlice";
+import {
+  fetchBlogs,
+  addBlogs,
+  removeBlogs,
+  editBlogs,
+} from "./BlogSlice/BlogSlice";
+import { Oval } from "react-loader-spinner";
 const Blogs = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -17,8 +23,8 @@ const Blogs = () => {
   const [text_zh, setText_zh] = useState("");
   const [author, setAuthor] = useState("");
   const [images, setImages] = useState([]);
-  const [selectedBlogImages,setSelectedBlogImages] = useState([])
-  const [isImageModalOpen, setIsImageModalOpen] = useState(false)
+  const [selectedBlogImages, setSelectedBlogImages] = useState([]);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [editTitle_en, setEditTitle_en] = useState("");
   const [editTitle_ru, setEditTitle_ru] = useState("");
   const [editTitle_uz, setEditTitle_uz] = useState("");
@@ -31,13 +37,35 @@ const Blogs = () => {
   const [editText_zh, setEditText_zh] = useState("");
   const [editAuthor, setEditAuthor] = useState("");
   const [editImages, setEditImages] = useState([]);
+  const [editId, setEditId] = useState(null);
   const dispatch = useDispatch();
   const { blogsData, error, loading } = useSelector((state) => state.blogs);
 
-  const img_url = "https://api.dezinfeksiyatashkent.uz/api/uploads/images/"
+  const img_url = "https://api.dezinfeksiyatashkent.uz/api/uploads/images/";
+
+  useEffect(() => {
+    if (editId !== null) {
+      const blog = blogsData.find((blog) => blog.id === editId);
+      if (blog) {
+        setEditTitle_en(blog.title_en);
+        setEditTitle_ru(blog.title_ru);
+        setEditTitle_uz(blog.title_uz);
+        setEditTitle_tr(blog.title_tr);
+        setEditTitle_zh(blog.title_zh);
+        setEditText_en(blog.text_en);
+        setEditText_ru(blog.text_ru);
+        setEditText_uz(blog.text_uz);
+        setEditText_tr(blog.text_tr);
+        setEditText_zh(blog.text_zh);
+        setEditAuthor(blog.author);
+        setEditImages(blog.blog_images);
+      }
+    }
+  }, [editId, blogsData]);
 
   const openEditModal = (id) => {
     if (id) {
+      setEditId(id);
       setIsEdit(true);
       setIsOpenModal(true);
     } else {
@@ -50,14 +78,30 @@ const Blogs = () => {
     dispatch(fetchBlogs());
   }, [dispatch]);
 
+  // loading qismi uchun
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="loader-container flex justify-center items-center h-[50vh]">
+        <Oval
+          height={80}
+          width={80}
+          color="#3498DB "
+          visible={true}
+          ariaLabel="oval-loading"
+          secondaryColor="#07F8AF"
+          strokeWidth={2}
+          strokeWidthSecondary={2}
+        />
+      </div>
+    );
   }
 
+  // blog errorlar uchun
   if (error) {
     return <div>Error: {error}</div>;
   }
 
+  // blog qo'shish uchun
   const handleAddBlogs = () => {
     const newBlogs = {
       title_en,
@@ -89,11 +133,47 @@ const Blogs = () => {
     setIsOpenModal(false);
   };
 
-  const openImageModal = (images) => {
-    setSelectedBlogImages(images)
-    setIsImageModalOpen(true)
-  }
+  // edit qismi uchun
+  const handleEditBlogs = () => {
+    const updateBlogs = {
+      id: editId,
+      title_en: editTitle_en,
+      title_ru: editTitle_ru,
+      title_uz: editTitle_uz,
+      title_tr: editTitle_tr,
+      title_zh: editTitle_zh,
+      text_en: editText_en,
+      text_ru: editText_ru,
+      text_uz: editText_uz,
+      text_tr: editText_tr,
+      text_zh: editText_zh,
+      author: editAuthor,
+      images: editImages,
+    };
+    dispatch(editBlogs(updateBlogs));
+    setEditTitle_en("");
+    setEditTitle_ru("");
+    setEditTitle_uz("");
+    setEditTitle_tr("");
+    setEditTitle_zh("");
+    setEditText_en("");
+    setEditText_ru("");
+    setEditText_uz("");
+    setEditText_tr("");
+    setEditText_zh("");
+    setEditAuthor("");
+    setEditImages(null);
+    setIsOpenModal(false);
+    setIsEdit(false);
+  };
 
+  // images lar modalda ochilishi uchun
+  const openImageModal = (images) => {
+    setSelectedBlogImages(images);
+    setIsImageModalOpen(true);
+  };
+
+  // blog delete uchun
   const deleteBlogs = (id) => {
     dispatch(removeBlogs(id));
   };
@@ -128,7 +208,7 @@ const Blogs = () => {
           <tbody>
             {blogsData.map((blog, index) => (
               <tr key={index}>
-                <td>{index+1}</td>
+                <td>{index + 1}</td>
                 <td>{blog.title_en}</td>
                 <td>{blog.title_ru}</td>
                 <td>{blog.title_uz}</td>
@@ -140,8 +220,15 @@ const Blogs = () => {
                 <td>{blog.text_tr}</td>
                 <td>{blog.text_zh}</td>
                 <td>{blog.author}</td>
-                <td onClick={() => openImageModal(blog.images)}>
-                  <button>View Images</button>
+                <td>
+                  <button
+                    onClick={() => {
+                      openImageModal(blog.blog_images);
+                      console.log(blog.blog_images);
+                    }}
+                  >
+                    View Images
+                  </button>
                 </td>
                 <td className="actions-td blog-action-td">
                   <button
@@ -150,7 +237,10 @@ const Blogs = () => {
                   >
                     Edit
                   </button>
-                  <button className="delete-btn" onClick={() => deleteBlogs(blog.id)}>
+                  <button
+                    className="delete-btn"
+                    onClick={() => deleteBlogs(blog.id)}
+                  >
                     Delete
                   </button>
                 </td>
@@ -164,14 +254,12 @@ const Blogs = () => {
           <div className="modal-content blog-modal-content">
             <span
               className="close-btn"
-              onClick={(id) => {
-                if (id) {
+              onClick={() => {
+                if (isEdit) {
                   setIsEdit(false);
-                  setIsOpenModal(false);
-                } else {
-                  setIsOpenModal(false);
                 }
-              }}
+                setIsOpenModal(false);
+                }}
             >
               X
             </span>
@@ -285,37 +373,46 @@ const Blogs = () => {
                     ? setEditAuthor(e.target.value)
                     : setAuthor(e.target.value)
                 }
-                placeholder="Authors"
+                placeholder="Author"
               />
               <input
                 type="file"
                 placeholder="Images"
+                multiple
                 onChange={(e) => setImages(e.target.files)}
               />
             </div>
-            <button onClick={handleAddBlogs}>{isEdit ? "Save" : "Add"}</button>
+            {isEdit && (
+              <div className="edit-images-container">
+                {editImages.map((img, index) => (
+                  <img src={img_url + img["image.src"]} key={index} alt="" />
+                ))}
+              </div>
+            )}
+            <button onClick={isEdit ? handleEditBlogs : handleAddBlogs}>
+              {isEdit ? "Save" : "Add"}
+            </button>
           </div>
         </div>
       )}
-      {
-        isImageModalOpen && (
-          <div className="modal image-modal">
-            <div className="modal-content image-modal-content">
-              <span className="close-btn" onClick={() => setIsImageModalOpen(false)}>
-                X
-              </span>
-              <h2>Images</h2>
-              <div className="images-container">
-                {
-                  selectedBlogImages.map((image) => (
-                    <img src={`${img_url}${image}`} alt="" />
-                  ))
-                }
-              </div>
+      {isImageModalOpen && (
+        <div className="image-modal">
+          <div className="image-modal-content">
+            <span
+              className="close-btn"
+              onClick={() => setIsImageModalOpen(false)}
+            >
+              X
+            </span>
+            <h2>Images</h2>
+            <div className="images-container">
+              {selectedBlogImages.map((img, index) => (
+                <img src={img_url + img["image.src"]} key={index} alt="" />
+              ))}
             </div>
           </div>
-        )
-      }
+        </div>
+      )}
     </div>
   );
 };
