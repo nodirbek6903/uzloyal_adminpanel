@@ -193,13 +193,13 @@ const Blogs = () => {
               <th>Title_EN</th>
               <th>Title_RU</th>
               <th>Title_UZ</th>
-              <th>Title_TR</th>
-              <th>Title_ZH</th>
+              {/* <th>Title_TR</th> */}
+              {/* <th>Title_ZH</th> */}
               <th>Text_EN</th>
               <th>Text_RU</th>
               <th>Text_UZ</th>
-              <th>Text_TR</th>
-              <th>Text_ZH</th>
+              {/* <th>Text_TR</th> */}
+              {/* <th>Text_ZH</th> */}
               <th>Author</th>
               <th>Images</th>
               <th>Actions</th>
@@ -212,13 +212,13 @@ const Blogs = () => {
                 <td>{blog.title_en}</td>
                 <td>{blog.title_ru}</td>
                 <td>{blog.title_uz}</td>
-                <td>{blog.title_tr}</td>
-                <td>{blog.title_zh}</td>
+                {/* <td>{blog.title_tr}</td> */}
+                {/* <td>{blog.title_zh}</td> */}
                 <td>{blog.text_en}</td>
                 <td>{blog.text_ru}</td>
                 <td>{blog.text_uz}</td>
-                <td>{blog.text_tr}</td>
-                <td>{blog.text_zh}</td>
+                {/* <td>{blog.text_tr}</td> */}
+                {/* <td>{blog.text_zh}</td> */}
                 <td>{blog.author}</td>
                 <td>
                   <button
@@ -379,7 +379,7 @@ const Blogs = () => {
                 type="file"
                 placeholder="Images"
                 multiple
-                onChange={(e) => setImages(e.target.files)}
+                onChange={(e) => isEdit ? setEditImages(e.target.value) : setImages(e.target.files)}
               />
             </div>
             {isEdit && (
