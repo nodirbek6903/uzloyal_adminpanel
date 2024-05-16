@@ -1,0 +1,30 @@
+.blogs-container{
+    width: 100%;
+    max-width: 1920px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+.blog-add-btns{
+    display: flex;
+    justify-content: flex-end;
+}
+
+.blog-table{
+    overflow-x: scroll;
+    scrollbar-width: none;
+}
+.blog-action-td{
+    display: flex;
+}
+
+.blog-modal-content{
+    max-width: 600px;
+    margin-top: 50px;
+}
+.blog-modal-content .blog-modal-inputs{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
