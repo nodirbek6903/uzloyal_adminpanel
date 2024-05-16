@@ -4,6 +4,8 @@ import Layout from "./components/Layout/Layout";
 import Main from "./components/Main/Main";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { QueryClientProvider } from "react-query";
+import queryClient from "./service/queryClient";
 
 function App() {
   const navigate = useNavigate();
@@ -13,13 +15,15 @@ function App() {
     if (!token) {
       navigate("/login");
     }
-  }, [])
+  }, []);
 
   return (
     <div className="container">
-      <ToastContainer />
-      <Layout />
-      <Main />
+      <QueryClientProvider client={queryClient}>
+        <ToastContainer />
+        <Layout />
+        <Main />
+      </QueryClientProvider>
     </div>
   );
 }
