@@ -30,7 +30,7 @@ export const fetchBlogs = createAsyncThunk(
   }
 );
 
-export const AddBlogs = createAsyncThunk(
+export const addBlogs = createAsyncThunk(
   "blogs/addBlogs",
   async (newBlogs, { rejectWithValue }) => {
     try {
@@ -47,9 +47,11 @@ export const AddBlogs = createAsyncThunk(
       formData.append("text_tr", newBlogs.text_tr);
       formData.append("text_zh", newBlogs.text_zh);
       formData.append("author", newBlogs.author);
-      images.forEach((image) => {
-        formData.append("images", image);
-      });
+      if (newBlogs.images && newBlogs.images.length > 0) {
+        Array.from(newBlogs.images).forEach((image) => {
+          formData.append("images", image);
+        });
+      }
 
       const response = await axios.post(API_URL, formData, {
         headers: {
@@ -86,7 +88,6 @@ const blogsSlice = createSlice({
   name: "blogs",
   initialState: {
     blogsData: [],
-    images: [],
     loading: false,
     error: null,
   },
@@ -105,13 +106,19 @@ const blogsSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(AddBlogs.fulfilled, (state, action) => {
+      .addCase(addBlogs.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(addBlogs.fulfilled, (state, action) => {
+        state.loading = false;
         state.blogsData.push(action.payload);
         toast.success("Added blog successfully");
       })
-      .addCase(AddBlogs.rejected, (state, action) => {
-        state.error = action.payload;
+      .addCase(addBlogs.rejected, (state, action) => {
         state.loading = false;
+        state.error = action.payload;
+        toast.error("Failed to add blog");
       })
       .addCase(removeBlogs.fulfilled, (state, action) => {
         state.blogsData = state.blogsData.filter(

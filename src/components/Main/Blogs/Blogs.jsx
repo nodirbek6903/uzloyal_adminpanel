@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./Blogs.css";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchBlogs, AddBlogs, removeBlogs } from "./BlogSlice/BlogSlice";
+import { fetchBlogs, addBlogs, removeBlogs } from "./BlogSlice/BlogSlice";
 const Blogs = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -17,6 +17,8 @@ const Blogs = () => {
   const [text_zh, setText_zh] = useState("");
   const [author, setAuthor] = useState("");
   const [images, setImages] = useState([]);
+  const [selectedBlogImages,setSelectedBlogImages] = useState([])
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false)
   const [editTitle_en, setEditTitle_en] = useState("");
   const [editTitle_ru, setEditTitle_ru] = useState("");
   const [editTitle_uz, setEditTitle_uz] = useState("");
@@ -31,6 +33,8 @@ const Blogs = () => {
   const [editImages, setEditImages] = useState([]);
   const dispatch = useDispatch();
   const { blogsData, error, loading } = useSelector((state) => state.blogs);
+
+  const img_url = "https://api.dezinfeksiyatashkent.uz/api/uploads/images/"
 
   const openEditModal = (id) => {
     if (id) {
@@ -69,7 +73,7 @@ const Blogs = () => {
       author,
       images,
     };
-    dispatch(AddBlogs(newBlogs));
+    dispatch(addBlogs(newBlogs));
     setTitle_en("");
     setTitle_ru("");
     setTitle_uz("");
@@ -84,6 +88,11 @@ const Blogs = () => {
     setImages(null);
     setIsOpenModal(false);
   };
+
+  const openImageModal = (images) => {
+    setSelectedBlogImages(images)
+    setIsImageModalOpen(true)
+  }
 
   const deleteBlogs = (id) => {
     dispatch(removeBlogs(id));
@@ -119,6 +128,7 @@ const Blogs = () => {
           <tbody>
             {blogsData.map((blog, index) => (
               <tr key={index}>
+                <td>{index+1}</td>
                 <td>{blog.title_en}</td>
                 <td>{blog.title_ru}</td>
                 <td>{blog.title_uz}</td>
@@ -130,7 +140,9 @@ const Blogs = () => {
                 <td>{blog.text_tr}</td>
                 <td>{blog.text_zh}</td>
                 <td>{blog.author}</td>
-                <td>image</td>
+                <td onClick={() => openImageModal(blog.images)}>
+                  <button>View Images</button>
+                </td>
                 <td className="actions-td blog-action-td">
                   <button
                     className="edit-btn"
@@ -138,39 +150,13 @@ const Blogs = () => {
                   >
                     Edit
                   </button>
-                  <button className="delete-btn" onClick={deleteBlogs(blog.id)}>
+                  <button className="delete-btn" onClick={() => deleteBlogs(blog.id)}>
                     Delete
                   </button>
                 </td>
               </tr>
             ))}
           </tbody>
-          {/* <tbody>
-            <tr>
-              <td>1</td>
-              <td>title1</td>
-              <td>title2</td>
-              <td>title3</td>
-              <td>title4</td>
-              <td>title5</td>
-              <td>text1</td>
-              <td>text2</td>
-              <td>text3</td>
-              <td>text4</td>
-              <td>text5</td>
-              <td>Author</td>
-              <td>Images</td>
-              <td className="actions-td blog-action-td">
-                <button
-                  className="edit-btn"
-                  onClick={() => openEditModal(1234)}
-                >
-                  Edit
-                </button>
-                <button className="delete-btn">Delete</button>
-              </td>
-            </tr>
-          </tbody> */}
         </table>
       </div>
       {isOpenModal && (
@@ -311,6 +297,25 @@ const Blogs = () => {
           </div>
         </div>
       )}
+      {
+        isImageModalOpen && (
+          <div className="modal image-modal">
+            <div className="modal-content image-modal-content">
+              <span className="close-btn" onClick={() => setIsImageModalOpen(false)}>
+                X
+              </span>
+              <h2>Images</h2>
+              <div className="images-container">
+                {
+                  selectedBlogImages.map((image) => (
+                    <img src={`${img_url}${image}`} alt="" />
+                  ))
+                }
+              </div>
+            </div>
+          </div>
+        )
+      }
     </div>
   );
 };
