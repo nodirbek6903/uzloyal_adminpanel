@@ -4,6 +4,7 @@ import Categories from './Categories/Categories';
 import Blogs from './Blogs/Blogs';
 import Sources from './Sources/Sources';
 import Dashboard from './Dashboard/Dashboard';
+import News from './News/News';
 
 const Main = () => {
   return (
@@ -13,6 +14,7 @@ const Main = () => {
             <Route path="/categories" element={<Categories />} />
             <Route path="/blogs" element={<Blogs />} />
             <Route path="/sources" element={<Sources />} />
+            <Route path="/news" element={<News />} />
         </Routes>
     </div>
   )
