@@ -65,6 +65,26 @@ export const addBlogs = createAsyncThunk(
   }
 );
 
+export const fetchSingleBlog = createAsyncThunk(
+  "blogs/FetchSingleBlog",
+  async (id, {rejectWithValue}) => {
+    try {
+      const token = getAuthToken()
+      const response = await axios.get(`${API_URL}/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      })
+      if(response.ok){
+        return response.data.data
+      }
+    } catch (error) {
+      console.error("Fetch Single Blog Error:", error.response);
+      return rejectWithValue(error.message);
+    }
+  }
+)
+
 export const editBlogs = createAsyncThunk(
   "blogs/editBlogs",
   async (updateBlogs, { rejectWithValue }) => {
@@ -159,6 +179,18 @@ const blogsSlice = createSlice({
         state.error = action.payload;
         state.loading = false; // Ensure loading state is reset
         toast.error("Failed to add blog");
+      })
+      .addCase(fetchSingleBlog.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchSingleBlog.fulfilled, (state, action) => {
+        state.loading = false;
+        state.selectedBlog = action.payload;
+      })
+      .addCase(fetchSingleBlog.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       })
       .addCase(editBlogs.fulfilled, (state, action) => {
         const index = state.blogsData.findIndex(

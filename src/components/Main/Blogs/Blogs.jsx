@@ -6,6 +6,7 @@ import {
   addBlogs,
   removeBlogs,
   editBlogs,
+  fetchSingleBlog,
 } from "./BlogSlice/BlogSlice";
 import { Oval } from "react-loader-spinner";
 const Blogs = () => {
@@ -43,36 +44,34 @@ const Blogs = () => {
 
   const img_url = "https://api.dezinfeksiyatashkent.uz/api/uploads/images/";
 
-  useEffect(() => {
-    if (editId !== null) {
-      const blog = blogsData.find((blog) => blog.id === editId);
-      if (blog) {
-        setEditTitle_en(blog.title_en);
-        setEditTitle_ru(blog.title_ru);
-        setEditTitle_uz(blog.title_uz);
-        setEditTitle_tr(blog.title_tr);
-        setEditTitle_zh(blog.title_zh);
-        setEditText_en(blog.text_en);
-        setEditText_ru(blog.text_ru);
-        setEditText_uz(blog.text_uz);
-        setEditText_tr(blog.text_tr);
-        setEditText_zh(blog.text_zh);
-        setEditAuthor(blog.author);
-        setEditImages(blog.blog_images);
-      }
-    }
-  }, [editId, blogsData]);
-
   const openEditModal = (id) => {
     if (id) {
-      setEditId(id);
       setIsEdit(true);
-      setIsOpenModal(true);
+      setEditId(id);
+      dispatch(fetchSingleBlog(id))
     } else {
       setIsOpenModal(true);
       setIsEdit(false);
     }
+    setIsOpenModal(true);
   };
+  useEffect(() => {
+    const selectedBlog = blogsData.find((blog) => blog.id === editId)
+    if (editId) {
+      setEditTitle_en(selectedBlog.title_en);
+      setEditTitle_ru(selectedBlog.title_ru);
+      setEditTitle_uz(selectedBlog.title_uz);
+      setEditTitle_tr(selectedBlog.title_tr);
+      setEditTitle_zh(selectedBlog.title_zh);
+      setEditText_en(selectedBlog.text_en);
+      setEditText_ru(selectedBlog.text_ru);
+      setEditText_uz(selectedBlog.text_uz);
+      setEditText_tr(selectedBlog.text_tr);
+      setEditText_zh(selectedBlog.text_zh);
+      setEditAuthor(selectedBlog.author);
+      // setEditImages(selectedBlog.blog_images);
+    }
+  }, [blogsData, isEdit]);
 
   useEffect(() => {
     dispatch(fetchBlogs());
@@ -118,6 +117,7 @@ const Blogs = () => {
       images,
     };
     dispatch(addBlogs(newBlogs));
+    dispatch(fetchBlogs())
     setTitle_en("");
     setTitle_ru("");
     setTitle_uz("");
@@ -193,13 +193,9 @@ const Blogs = () => {
               <th>Title_EN</th>
               <th>Title_RU</th>
               <th>Title_UZ</th>
-              {/* <th>Title_TR</th> */}
-              {/* <th>Title_ZH</th> */}
               <th>Text_EN</th>
               <th>Text_RU</th>
               <th>Text_UZ</th>
-              {/* <th>Text_TR</th> */}
-              {/* <th>Text_ZH</th> */}
               <th>Author</th>
               <th>Images</th>
               <th>Actions</th>
@@ -212,19 +208,14 @@ const Blogs = () => {
                 <td>{blog.title_en}</td>
                 <td>{blog.title_ru}</td>
                 <td>{blog.title_uz}</td>
-                {/* <td>{blog.title_tr}</td> */}
-                {/* <td>{blog.title_zh}</td> */}
                 <td>{blog.text_en}</td>
                 <td>{blog.text_ru}</td>
                 <td>{blog.text_uz}</td>
-                {/* <td>{blog.text_tr}</td> */}
-                {/* <td>{blog.text_zh}</td> */}
                 <td>{blog.author}</td>
                 <td>
                   <button
                     onClick={() => {
                       openImageModal(blog.blog_images);
-                      console.log(blog.blog_images);
                     }}
                   >
                     View Images
@@ -315,7 +306,7 @@ const Blogs = () => {
                 }
                 placeholder="Title_ZH"
               />
-              <input
+              <textarea
                 type="text"
                 value={isEdit ? editText_en : text_en}
                 onChange={(e) =>
@@ -325,7 +316,7 @@ const Blogs = () => {
                 }
                 placeholder="Text_EN"
               />
-              <input
+              <textarea
                 type="text"
                 value={isEdit ? editText_ru : text_ru}
                 onChange={(e) =>
@@ -335,7 +326,7 @@ const Blogs = () => {
                 }
                 placeholder="Text_RU"
               />
-              <input
+              <textarea
                 type="text"
                 value={isEdit ? editText_uz : text_uz}
                 onChange={(e) =>
@@ -345,7 +336,7 @@ const Blogs = () => {
                 }
                 placeholder="Text_UZ"
               />
-              <input
+              <textarea
                 type="text"
                 value={isEdit ? editText_tr : text_tr}
                 onChange={(e) =>
@@ -355,7 +346,7 @@ const Blogs = () => {
                 }
                 placeholder="Text_TR"
               />
-              <input
+              <textarea
                 type="text"
                 value={isEdit ? editText_zh : text_zh}
                 onChange={(e) =>
@@ -382,13 +373,13 @@ const Blogs = () => {
                 onChange={(e) => isEdit ? setEditImages(e.target.value) : setImages(e.target.files)}
               />
             </div>
-            {isEdit && (
+            {/* {isEdit && (
               <div className="edit-images-container">
                 {editImages.map((img, index) => (
-                  <img src={img_url + img["image.src"]} key={index} alt="" />
+                  <img src={img_url + img.image.src} key={index} alt="" />
                 ))}
               </div>
-            )}
+            )} */}
             <button onClick={isEdit ? handleEditBlogs : handleAddBlogs}>
               {isEdit ? "Save" : "Add"}
             </button>
@@ -407,7 +398,7 @@ const Blogs = () => {
             <h2>Images</h2>
             <div className="images-container">
               {selectedBlogImages.map((img, index) => (
-                <img src={img_url + img["image.src"]} key={index} alt="" />
+                <img src={img_url + img.image.src} key={index} alt="" />
               ))}
             </div>
           </div>

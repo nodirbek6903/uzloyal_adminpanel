@@ -24,32 +24,40 @@
   gap: 20px;
   flex-wrap: wrap;
   align-items: center;
+  margin: 20px 0;
 }
 .edit-images-container img{
-  width: 200px;
-  height: 200px;
+  width: 150px;
+  height: 150px;
 }
-
+.blog-modal{
+  overflow-y: scroll;
+  scrollbar-width: none;
+}
 .blog-modal-content {
   max-width: 800px;
-  margin-top: 50px;
+  margin-top: 100px;
 }
 .blog-modal-content .blog-modal-inputs {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  gap: 30px;
 }
 
 .blog-modal-content h2 {
   margin-top: 0;
 }
-.blog-modal-content input {
+.blog-modal-content input,.blog-modal-content textarea {
   width: 100%;
   padding: 10px;
   margin: 10px 0;
   border: 1px solid #ccc;
   border-radius: 5px;
   outline: none;
+  resize: none;
+}
+.blog-modal-content textarea{
+  margin: 0;
 }
 
 .blog-modal-content button {
@@ -59,6 +67,7 @@
   color: white;
   border-radius: 5px;
   cursor: pointer;
+  margin-top: 20px;
 }
 
 .blog-modal-content button:hover {
