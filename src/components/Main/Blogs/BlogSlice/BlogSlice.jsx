@@ -102,11 +102,13 @@ export const editBlogs = createAsyncThunk(
       formData.append("text_tr", updateBlogs.text_tr);
       formData.append("text_zh", updateBlogs.text_zh);
       formData.append("author", updateBlogs.author);
-      Array.from(updateBlogs.images).forEach((image) => {
-        formData.append("images", image);
-      });
+      if (updateBlogs.images && updateBlogs.images.length > 0) {
+        Array.from(updateBlogs.images).forEach((image) => {
+          formData.append("images", image);
+        });
+      }
 
-      console.log('FormData sent to server:', formData); // Log FormData content
+      console.log('FormData sent to server:', formData);
 
       const response = await axios.put(
         `${API_URL}/${updateBlogs.id}`,
