@@ -67,23 +67,21 @@ export const addBlogs = createAsyncThunk(
 
 export const fetchSingleBlog = createAsyncThunk(
   "blogs/FetchSingleBlog",
-  async (id, {rejectWithValue}) => {
+  async (id, { rejectWithValue }) => {
     try {
-      const token = getAuthToken()
+      const token = getAuthToken();
       const response = await axios.get(`${API_URL}/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
-        }
-      })
-      if(response.ok){
-        return response.data.data
-      }
+        },
+      });
+      return response.data.data;
     } catch (error) {
       console.error("Fetch Single Blog Error:", error.response);
       return rejectWithValue(error.message);
     }
   }
-)
+);
 
 export const editBlogs = createAsyncThunk(
   "blogs/editBlogs",
@@ -102,13 +100,12 @@ export const editBlogs = createAsyncThunk(
       formData.append("text_tr", updateBlogs.text_tr);
       formData.append("text_zh", updateBlogs.text_zh);
       formData.append("author", updateBlogs.author);
-      if (updateBlogs.images && updateBlogs.images.length > 0) {
-        Array.from(updateBlogs.images).forEach((image) => {
-          formData.append("images", image);
-        });
-      }
-
-      console.log('FormData sent to server:', formData);
+      // if (updateBlogs.images && updateBlogs.images.length > 0) {
+      //   Array.from(updateBlogs.images).forEach((image) => {
+      //     formData.append("images", image);
+      //   });
+      // }
+      console.log("FormData sent to server:", formData);
 
       const response = await axios.put(
         `${API_URL}/${updateBlogs.id}`,
@@ -174,12 +171,12 @@ const blogsSlice = createSlice({
       })
       .addCase(addBlogs.fulfilled, (state, action) => {
         state.blogsData.push(action.payload);
-        state.loading = false; // Ensure loading state is reset
+        state.loading = false;
         toast.success("Added blog successfully");
       })
       .addCase(addBlogs.rejected, (state, action) => {
         state.error = action.payload;
-        state.loading = false; // Ensure loading state is reset
+        state.loading = false;
         toast.error("Failed to add blog");
       })
       .addCase(fetchSingleBlog.pending, (state) => {
@@ -201,12 +198,12 @@ const blogsSlice = createSlice({
         if (index !== -1) {
           state.blogsData[index] = action.payload;
         }
-        state.loading = false; // Ensure loading state is reset
+        state.loading = false;
         toast.success("Edited blog successfully");
       })
       .addCase(editBlogs.rejected, (state, action) => {
         state.error = action.payload;
-        state.loading = false; // Ensure loading state is reset
+        state.loading = false;
         toast.error("Failed to edit blog");
       })
       .addCase(removeBlogs.fulfilled, (state, action) => {

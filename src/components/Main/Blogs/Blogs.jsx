@@ -9,6 +9,7 @@ import {
   fetchSingleBlog,
 } from "./BlogSlice/BlogSlice";
 import { Oval } from "react-loader-spinner";
+import { toast } from "react-toastify";
 const Blogs = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -24,7 +25,7 @@ const Blogs = () => {
   const [text_zh, setText_zh] = useState("");
   const [author, setAuthor] = useState("");
   const [images, setImages] = useState([]);
-  const [selectedBlogImages, setSelectedBlogImages] = useState([]);
+  const [selectedBlogImages, setSelectedBlogImages] = useState(null);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [editTitle_en, setEditTitle_en] = useState("");
   const [editTitle_ru, setEditTitle_ru] = useState("");
@@ -37,7 +38,7 @@ const Blogs = () => {
   const [editText_tr, setEditText_tr] = useState("");
   const [editText_zh, setEditText_zh] = useState("");
   const [editAuthor, setEditAuthor] = useState("");
-  const [editImages, setEditImages] = useState([]);
+  // const [editImages, setEditImages] = useState([]);
   const [editId, setEditId] = useState(null);
   const dispatch = useDispatch();
   const { blogsData, error, loading } = useSelector((state) => state.blogs);
@@ -48,7 +49,7 @@ const Blogs = () => {
     if (id) {
       setIsEdit(true);
       setEditId(id);
-      dispatch(fetchSingleBlog(id))
+      dispatch(fetchSingleBlog(id));
     } else {
       setIsOpenModal(true);
       setIsEdit(false);
@@ -56,7 +57,7 @@ const Blogs = () => {
     setIsOpenModal(true);
   };
   useEffect(() => {
-    const selectedBlog = blogsData.find((blog) => blog.id === editId)
+    const selectedBlog = blogsData.find((blog) => blog.id === editId);
     if (editId) {
       setEditTitle_en(selectedBlog.title_en);
       setEditTitle_ru(selectedBlog.title_ru);
@@ -69,7 +70,7 @@ const Blogs = () => {
       setEditText_tr(selectedBlog.text_tr);
       setEditText_zh(selectedBlog.text_zh);
       setEditAuthor(selectedBlog.author);
-      // setEditImages(selectedBlog.blog_images);
+      setSelectedBlogImages(selectedBlog.blog_images);
     }
   }, [blogsData, isEdit]);
 
@@ -100,8 +101,29 @@ const Blogs = () => {
     return <div>Error: {error}</div>;
   }
 
+  const validateForm = () => {
+    return (
+      title_en &&
+      title_ru &&
+      title_uz &&
+      title_tr &&
+      title_zh &&
+      text_en &&
+      text_ru &&
+      text_uz &&
+      text_tr &&
+      text_zh &&
+      author &&
+      images.length
+    );
+  };
+
   // blog qo'shish uchun
   const handleAddBlogs = () => {
+    if (!validateForm()) {
+      toast.warning("Iltimos barcha maydonlarni to'ldiring.");
+      return;
+    }
     const newBlogs = {
       title_en,
       title_ru,
@@ -117,7 +139,7 @@ const Blogs = () => {
       images,
     };
     dispatch(addBlogs(newBlogs));
-    dispatch(fetchBlogs())
+    dispatch(fetchBlogs());
     setTitle_en("");
     setTitle_ru("");
     setTitle_uz("");
@@ -148,7 +170,6 @@ const Blogs = () => {
       text_tr: editText_tr,
       text_zh: editText_zh,
       author: editAuthor,
-      images: editImages,
     };
     dispatch(editBlogs(updateBlogs));
     setEditTitle_en("");
@@ -162,7 +183,7 @@ const Blogs = () => {
     setEditText_tr("");
     setEditText_zh("");
     setEditAuthor("");
-    setEditImages(null);
+    // setEditImages(null);
     setIsOpenModal(false);
     setIsEdit(false);
   };
@@ -172,6 +193,7 @@ const Blogs = () => {
     setSelectedBlogImages(images);
     setIsImageModalOpen(true);
   };
+  console.log(blogsData[0]);
 
   // blog delete uchun
   const deleteBlogs = (id) => {
@@ -250,7 +272,7 @@ const Blogs = () => {
                   setIsEdit(false);
                 }
                 setIsOpenModal(false);
-                }}
+              }}
             >
               X
             </span>
@@ -370,16 +392,19 @@ const Blogs = () => {
                 type="file"
                 placeholder="Images"
                 multiple
-                onChange={(e) => isEdit ? setEditImages(e.target.value) : setImages(e.target.files)}
+                onChange={(e) => setImages(e.target.files)}
               />
+              {/* <input
+                type="file"
+                placeholder="Images"
+                multiple
+                onChange={(e) =>
+                  isEdit
+                    ? setEditImages(e.target.value)
+                    : setImages(e.target.files)
+                }
+              /> */}
             </div>
-            {/* {isEdit && (
-              <div className="edit-images-container">
-                {editImages.map((img, index) => (
-                  <img src={img_url + img.image.src} key={index} alt="" />
-                ))}
-              </div>
-            )} */}
             <button onClick={isEdit ? handleEditBlogs : handleAddBlogs}>
               {isEdit ? "Save" : "Add"}
             </button>

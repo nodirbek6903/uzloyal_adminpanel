@@ -115,13 +115,12 @@
   cursor: pointer;
 }
 .image-modal-content .images-container{
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
   gap: 20px;
-  flex-wrap: wrap;
-  align-items: center;
 }
 .image-modal-content .images-container img{
-  width: 200px;
-  height: 200px;
+  width: 150px;
+  height: 150px;
   margin: 0 auto;
 }
