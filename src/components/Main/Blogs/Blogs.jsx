@@ -193,7 +193,6 @@ const Blogs = () => {
     setSelectedBlogImages(images);
     setIsImageModalOpen(true);
   };
-  console.log(blogsData[0]);
 
   // blog delete uchun
   const deleteBlogs = (id) => {
@@ -235,7 +234,7 @@ const Blogs = () => {
                 <td>{blog.text_uz}</td>
                 <td>{blog.author}</td>
                 <td>
-                  <button
+                  <button className="td-images-btn"
                     onClick={() => {
                       openImageModal(blog.blog_images);
                     }}

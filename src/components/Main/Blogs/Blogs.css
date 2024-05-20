@@ -18,6 +18,11 @@
 .blog-action-td {
   display: flex;
 }
+.td-images-btn{
+  background: #0056b3;
+  padding: 5px 10px;
+  border-radius: 10px;
+}
 
 .edit-images-container{
   display: flex;
