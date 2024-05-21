@@ -5,9 +5,10 @@ import { Oval } from "react-loader-spinner";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchNews, addNews, editNews, removeNews } from "./NewsSlice";
 import "./News.css";
+// import { toast } from "react-toastify";
 
 
-const News = () => {
+function News() {
   const [titleEn, setTitleEn] = useState("");
   const [titleRu, setTitleRu] = useState("");
   const [titleUz, setTitleUz] = useState("");
@@ -28,11 +29,11 @@ const News = () => {
   const [editTextUz, setEditTextUz] = useState("");
   const [editTextTr, setEditTextTr] = useState("");
   const [editTextZh, setEditTextZh] = useState("");
-  const [author, setAuthor] = useState("");
-  const [editAuthor, setEditAuthor] = useState("");
-  const [images, setImages] = useState([]);
-  const [editedImages, setEditedImages] = useState([]);
-  const [prevImage, setPrevImage] = useState("");
+  const [authorNews, setAuthorNews] = useState("");
+  const [editAuthorNews, setEditAuthorNews] = useState("");
+  const [imagesNews, setImagesNews] = useState([]);
+  const [editImagesNews, setEditImagesNews] = useState([]);
+  // const [prevImage, setPrevImage] = useState([]);
   const [search, setSearch] = useState("");
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -40,23 +41,8 @@ const News = () => {
   
   const imgUrl = "https://api.dezinfeksiyatashkent.uz/api/uploads/images/";
 
-  // let newsData = [];
-
-  // useEffect(() => {
-  //   const getNews = async () => {
-  //     try {
-  //       const response = await NewsService.getNews();
-  //       console.log(response);
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   }
-
-  //   getNews();
-  // }, [])
-
   const dispatch = useDispatch();
-  const { newsData, loading, error } = useSelector(state => state.news);
+  const { newsData, loading } = useSelector(state => state.news);
 
   useEffect(() => {
     dispatch(fetchNews());
@@ -77,7 +63,8 @@ const News = () => {
         setEditTextUz(news?.text_uz);
         setEditTextTr(news?.text_tr);
         setEditTextZh(news?.text_zh);
-        setEditAuthor(news?.["author"]);
+        setEditAuthorNews(news?.author);
+        // setEditImagesNews(news?.images);
       }
     }
   }, [editId, newsData]);
@@ -99,13 +86,10 @@ const News = () => {
     );
   }
 
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-  // console.log(images);
-
   //news qo'shish uchun
-  const handleAddNews = () => {
+  const handleAddNews = (e) => {
+    e.preventDefault();
+
     const newNews = {
       title_en: titleEn,
       title_ru: titleRu,
@@ -117,9 +101,12 @@ const News = () => {
       text_uz: textUz,
       text_tr: textTr,
       text_zh: textZh,
-      author_news: author,
-      images,
+      author: authorNews,
+      images: imagesNews,
     };
+
+    console.log(newNews);
+    // setPrevImage([...imagesNews]);
     dispatch(addNews(newNews));
     setTitleEn("");
     setTitleRu("");
@@ -131,25 +118,17 @@ const News = () => {
     setTextUz("");
     setTextTr("");
     setTextZh("");
-    setAuthor("");
-    setImages([]);
+    setAuthorNews("");
+    setImagesNews([]);
     setIsOpenModal(false);
   };
 
   // edit news
-  const handleEditNews = () => {
+  const handleEditNews = (e) => {
+    e.preventDefault();
+
     const updateNews = {
       id: editId,
-      editTitleEn,
-      editTitleRu,
-      editTitleUz,
-      editTitleTr,
-      editTitleZh,
-      editTextEn,
-      editTextRu,
-      editTextUz,
-      editTextTr,
-      editTextZh,
       title_en: editTitleEn,
       title_ru: editTitleRu,
       title_uz: editTitleUz,
@@ -160,8 +139,9 @@ const News = () => {
       text_uz: editTextUz,
       text_tr: editTextTr,
       text_zh: editTextZh,
-      author_news: editAuthor,
-      images,
+      author: editAuthorNews,
+      // imagesNews,
+      // images: editImagesNews,
     };
     dispatch(editNews(updateNews));
     setEditTitleEn("");
@@ -174,8 +154,9 @@ const News = () => {
     setEditTextUz("");
     setEditTextTr("");
     setEditTextZh("");
-    setEditAuthor("");
-    setImages([]);
+    setEditAuthorNews("");
+    // setImagesNews([]);
+    setEditImagesNews([]);
     setIsOpenModal(false);
     setIsEdit(false);
     setEditId(null);
@@ -200,9 +181,12 @@ const News = () => {
 
   // search news uchun
   const filteredNews = newsData.filter((news) =>
-    news?.title_en.toLowerCase().includes(search.toLowerCase())
+    news?.title_en.toLowerCase().includes(search.toLowerCase()) ||
+    news?.title_ru.toLowerCase().includes(search.toLowerCase()) ||
+    news?.title_uz.toLowerCase().includes(search.toLowerCase()) ||
+    news?.title_tr.toLowerCase().includes(search.toLowerCase()) ||
+    news?.title_zh.toLowerCase().includes(search.toLowerCase())
   );
-  // const filteredNews = newsData;
 
   return (
     <div id="news" className="categories-container">
@@ -217,7 +201,7 @@ const News = () => {
           />
           <FaSearch className="search-icon" />
         </div>
-        <div className="add-btns">
+        <div key={5} className="add-btns">
           <button className="add-btn" onClick={() => setIsOpenModal(true)}>
             Add+
           </button>
@@ -233,11 +217,6 @@ const News = () => {
               <th>Title uz</th>
               <th>Title tr</th>
               <th>Title zh</th>
-              <th>Text en</th>
-              <th>Text ru</th>
-              <th>Text uz</th>
-              <th>Text tr</th>
-              <th>Text zh</th>
               <th>Author</th>
               <th>Image</th>
               <th>Actions</th>
@@ -262,14 +241,9 @@ const News = () => {
                     <td>{news?.title_uz}</td>
                     <td>{news?.title_tr}</td>
                     <td>{news?.title_zh}</td>
-                    <td>{news?.text_en}</td>
-                    <td>{news?.text_ru}</td>
-                    <td>{news?.text_uz}</td>
-                    <td>{news?.text_tr}</td>
-                    <td>{news?.text_zh}</td>
-                    <td>{news?.["author"]}</td>
+                    <td>{news?.author}</td>
                     <td>
-                      <img src={imgUrl + news?.news_images[0]?.['image.src']} alt="news-img" />
+                      {/* {news?.news_images[0]?.['image.src'] && (<img src={imgUrl + news?.news_images[0]?.['image.src']} alt="news-img" />)} */}
                     </td>
                     <td className="actions-td">
                       <button
@@ -278,10 +252,7 @@ const News = () => {
                       >
                         Edit
                       </button>
-                      <button
-                        className="delete-btn"
-                        onClick={() => deleteNews(news.id)}
-                      >
+                      <button className="delete-btn" onClick={() => deleteNews(news.id)}>
                         Delete
                       </button>
                     </td>
@@ -295,51 +266,43 @@ const News = () => {
       {isOpenModal && (
         <div className="modal">
           <div className="modal-content">
-            <span
-              className="close-btn"
-              onClick={(id) => {
-                if (id) {
-                  setIsEdit(false);
-                  setIsOpenModal(false);
-                } else {
-                  setIsOpenModal(false);
-                }
-              }}
-            >
-              X
-            </span>
-            <h2>{isEdit ? "Edit News" : "Add News"}</h2>
-            {/* <input
-              type="text"
-              placeholder="Title en"
-              value={isEdit ? editTitleEn : titleEn}
-              onChange={(e) =>
-                isEdit ? setEditTitleEn(e.target.value) : setTitleEn(e.target.value)
-              }
-            /> */}
-            <div className="button-group">
-              <div className="titles">
-                <Input key={1} placeholder="Title en" isEdit={isEdit} editTitle={editTitleEn} title={titleEn} setEditTitle={setEditTitleEn} setTitle={setTitleEn} />
-                <Input key={2} placeholder="Title ru" isEdit={isEdit} editTitle={editTitleRu} title={titleRu} setEditTitle={setEditTitleRu} setTitle={setTitleRu} />
-                <Input key={3} placeholder="Title uz" isEdit={isEdit} editTitle={editTitleUz} title={titleUz} setEditTitle={setEditTitleUz} setTitle={setTitleUz} />
-                <Input key={4} placeholder="Title tr" isEdit={isEdit} editTitle={editTitleTr} title={titleTr} setEditTitle={setEditTitleTr} setTitle={setTitleTr} />
-                <Input key={5} placeholder="Title zh" isEdit={isEdit} editTitle={editTitleZh} title={titleZh} setEditTitle={setEditTitleZh} setTitle={setTitleZh} />
+            <form action="" onSubmit={isEdit ? handleEditNews : handleAddNews}>
+              <span
+                className="close-btn"
+                onClick={(id) => {
+                  if (id) {
+                    setIsEdit(false);
+                    setIsOpenModal(false);
+                  } else {
+                    setIsOpenModal(false);
+                  }
+                }}
+              >
+                X
+              </span>
+              <h2>{isEdit ? "Edit News" : "Add News"}</h2>
+              <div className="button-group">
+                <div className="titles">
+                  <Input key={1} placeholder="Title en" isEdit={isEdit} editTitle={editTitleEn} title={titleEn} setEditTitle={setEditTitleEn} setTitle={setTitleEn} />
+                  <Input key={2} placeholder="Title ru" isEdit={isEdit} editTitle={editTitleRu} title={titleRu} setEditTitle={setEditTitleRu} setTitle={setTitleRu} />
+                  <Input key={3} placeholder="Title uz" isEdit={isEdit} editTitle={editTitleUz} title={titleUz} setEditTitle={setEditTitleUz} setTitle={setTitleUz} />
+                  <Input key={4} placeholder="Title tr" isEdit={isEdit} editTitle={editTitleTr} title={titleTr} setEditTitle={setEditTitleTr} setTitle={setTitleTr} />
+                  <Input key={5} placeholder="Title zh" isEdit={isEdit} editTitle={editTitleZh} title={titleZh} setEditTitle={setEditTitleZh} setTitle={setTitleZh} />
+                </div>
+                <div className="texts">
+                  <Input key={6} placeholder="Text en" isEdit={isEdit} editTitle={editTextEn} title={textEn} setEditTitle={setEditTextEn} setTitle={setTextEn} />
+                  <Input key={7} placeholder="Text ru" isEdit={isEdit} editTitle={editTextRu} title={textRu} setEditTitle={setEditTextRu} setTitle={setTextRu} />
+                  <Input key={8} placeholder="Text uz" isEdit={isEdit} editTitle={editTextUz} title={textUz} setEditTitle={setEditTextUz} setTitle={setTextUz} />
+                  <Input key={9} placeholder="Text tr" isEdit={isEdit} editTitle={editTextTr} title={textTr} setEditTitle={setEditTextTr} setTitle={setTextTr} />
+                  <Input key={10} placeholder="Text zh" isEdit={isEdit} editTitle={editTextZh} title={textZh} setEditTitle={setEditTextZh} setTitle={setTextZh} />
+                </div>
               </div>
-              <div className="texts">
-                <Input key={6} placeholder="Text en" isEdit={isEdit} editTitle={editTextEn} title={textEn} setEditTitle={setEditTextEn} setTitle={setTextEn} />
-                <Input key={7} placeholder="Text ru" isEdit={isEdit} editTitle={editTextRu} title={textRu} setEditTitle={setEditTextRu} setTitle={setTextRu} />
-                <Input key={8} placeholder="Text uz" isEdit={isEdit} editTitle={editTextUz} title={textUz} setEditTitle={setEditTextUz} setTitle={setTextUz} />
-                <Input key={9} placeholder="Text tr" isEdit={isEdit} editTitle={editTextTr} title={textTr} setEditTitle={setEditTextTr} setTitle={setTextTr} />
-                <Input key={10} placeholder="Text zh" isEdit={isEdit} editTitle={editTextZh} title={textZh} setEditTitle={setEditTextZh} setTitle={setTextZh} />
-              </div>
-            </div>
-            <Input key={11} placeholder="Author" isEdit={isEdit} editTitle={editAuthor} title={author} setEditTitle={setEditAuthor} setTitle={setAuthor} />
-            <input type="file" onChange={(e) => setImages([...e.target.files])} name="img" id="img" />
-            <button
-              onClick={isEdit ? () => handleEditNews() : handleAddNews}
-            >
-              {isEdit ? "Save" : "Add"}
-            </button>
+              <Input key={11} placeholder="Author" isEdit={isEdit} editTitle={editAuthorNews} title={authorNews} setEditTitle={setEditAuthorNews} setTitle={setAuthorNews} />
+              <input placeholder="Multiple images can be uploaded" type="file" onChange={isEdit ? (e) => setEditImagesNews([...e.target.files]) : (e) => setImagesNews([...e.target.files])} name="img" id="img" />
+              <button type="submit">
+                {isEdit ? "Save" : "Add"}
+              </button>
+            </form>
           </div>
         </div>
       )}

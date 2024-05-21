@@ -48,30 +48,27 @@
   background: #fff;
   color: #000;
 }
-.category-table {
+#news .category-table {
   width: 100%;
   overflow-x: scroll;
 }
-.category-table .categories {
-  width: 180%;
+#news .category-table .categories {
+  width: 100%;
   border-collapse: collapse;
   border-radius: 10px;
-  /* overflow: hidden; */
-  /* display: grid; */
 }
-/* thead */
-.categories thead tr,
-.categories tbody tr {
+#news .categories thead tr,
+#news .categories tbody tr {
   display: grid;
   justify-items: start;
   align-items: center;
-  grid-template-columns: 60px repeat(11, 1fr) 1fr 220px !important;
+  grid-template-columns: 50px repeat(6, 120px) 120px 200px !important;
 }
 .categories thead {
   background: #000;
   color: #fff;
 }
-.category-thead tr th {
+#news .category-thead tr th {
   padding: 15px;
   text-transform: uppercase;
   font-weight: 700;
@@ -95,11 +92,14 @@
   height: 80px;
   object-fit: cover;
 }
-#news.categories tbody tr td {
+#news .categories tbody tr td {
   padding: 15px;
   text-align: start;
   color: #fff;
   font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* actions qismi */

@@ -20,6 +20,9 @@ export const addNews = createAsyncThunk(
   async (newNews, { rejectWithValue }) => {
     try {
       const formData = new FormData();
+      newNews?.images.forEach(img => {
+        formData.append("images", img);
+      });
       formData.append("title_en", newNews?.title_en);
       formData.append("title_ru", newNews?.title_ru);
       formData.append("title_uz", newNews?.title_uz);
@@ -30,8 +33,7 @@ export const addNews = createAsyncThunk(
       formData.append("text_uz", newNews?.text_uz);
       formData.append("text_tr", newNews?.text_tr);
       formData.append("text_zh", newNews?.text_zh);
-      formData.append("author", newNews?.author_news);
-      newNews?.images.forEach(img => {formData.append("images", img)})
+      formData.append("author", newNews?.author);
       const response = await axios.post("/news", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -50,18 +52,23 @@ export const editNews = createAsyncThunk(
   async (updateNews, { rejectWithValue }) => {
     try {
       const formData = new FormData();
-      formData.append("title_en", updateNews?.editTitleEn);
-      formData.append("title_ru", updateNews?.editTitleRu);
-      formData.append("title_uz", updateNews?.editTitleUz);
-      formData.append("title_tr", updateNews?.editTitleTr);
-      formData.append("title_zh", updateNews?.editTitleZh);
-      formData.append("text_en", updateNews?.editText_en);
-      formData.append("text_ru", updateNews?.editText_ru);
-      formData.append("text_uz", updateNews?.editText_uz);
-      formData.append("text_tr", updateNews?.editText_tr);
-      formData.append("text_zh", updateNews?.editText_zh);
-      formData.append("author", updateNews?.author_news);
-      newNews?.images.forEach(img => {formData.append("images", img)})
+      // formData.append("images", updateNews?.images);
+      formData.append("title_en", updateNews?.title_en);
+      formData.append("title_ru", updateNews?.title_ru);
+      formData.append("title_uz", updateNews?.title_uz);
+      formData.append("title_tr", updateNews?.title_tr);
+      formData.append("title_zh", updateNews?.title_zh);
+      formData.append("text_en", updateNews?.text_en);
+      formData.append("text_ru", updateNews?.text_ru);
+      formData.append("text_uz", updateNews?.text_uz);
+      formData.append("text_tr", updateNews?.text_tr);
+      formData.append("text_zh", updateNews?.text_zh);
+      formData.append("author", updateNews?.author);
+      // if(updateNews?.editImagesNews.length === 0){
+      //   console.log(updateNews?.images);
+      // } else {
+      //   updateNews?.editImagesNews.forEach(img => {formData.append("images", img)});
+      // }
       const response = await axios.put(`/news/${updateNews?.id}`,
         formData,
         {
@@ -81,7 +88,7 @@ export const editNews = createAsyncThunk(
 export const removeNews = createAsyncThunk(
   "news/removeNews",
   async (id, { rejectWithValue }) => {
-    try {
+    try {      
       await axios.delete(`news/${id}`);
       return id;
     } catch (error) {
