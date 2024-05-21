@@ -4,8 +4,8 @@ import Categories from "./Categories/Categories";
 import Blogs from "./Blogs/Blogs";
 import Sources from "./Sources/Sources";
 import Dashboard from "./Dashboard/Dashboard";
-import { FaqsRoutes } from "./Faqs";
-import { ServicesRoutes } from "./Services";
+import { Faqs } from "./Faqs/Faqs/Faqs";
+import { Services } from "./Services/ServicesMain/ServicesMain";
 
 const Main = () => {
   return (
@@ -15,8 +15,8 @@ const Main = () => {
         <Route path="/categories" element={<Categories />} />
         <Route path="/blogs" element={<Blogs />} />
         <Route path="/sources" element={<Sources />} />
-        <Route path="/faqs/*" element={<FaqsRoutes />} />
-        <Route path="/services/*" element={<ServicesRoutes />} />
+        <Route path="/faqs/*" element={<Faqs />} />
+        <Route path="/services/*" element={<Services />} />
       </Routes>
     </div>
   );
