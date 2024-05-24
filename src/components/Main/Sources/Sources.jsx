@@ -45,7 +45,7 @@ const Sources = () => {
       images: images,
     };
     dispatch(addSources(newSources))
-    console.log("selected category:", selectedCategory);
+    // console.log("selected category:", selectedCategory);
     dispatch(fetchSources());
     setTitle("");
     setCategories([]);
@@ -53,7 +53,7 @@ const Sources = () => {
     setIsOpenModal(false);
   };
 
-  console.log("sources Data:", sourcesData);
+  // console.log("sources Data:", sourcesData);
 
   if (loading) {
     return (
@@ -98,23 +98,23 @@ const Sources = () => {
         </thead>
         <tbody>
           {sourcesData.map((source, index) => (
-            <tr key={source.id}>
+            <tr key={source?.id}>
               <td>{index + 1}</td>
               <td>
-                <a className="sources-file">{source.title}</a>
+                <a className="sources-file">{source?.title}</a>
               </td>
-              <td>{source.category}</td>
+              <td>{source?.category}</td>
               <td>View images</td>
               <td className="actions-td">
                 <button
                   className="sources-edit-btn"
-                  onClick={() => handleOpenModal(source.id)}
+                  onClick={() => handleOpenModal(source?.id)}
                 >
                   Edit
                 </button>
                 <button
                   className="sources-delete-btn"
-                  onClick={() => handleRemoveSources(source.id)}
+                  onClick={() => handleRemoveSources(source?.id)}
                 >
                   Delete
                 </button>
